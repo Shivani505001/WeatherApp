@@ -1,0 +1,78 @@
+from django.shortcuts import render
+import requests
+import datetime
+
+# Create your views here.
+def home(request):
+    if 'city' in request.POST:
+        city=request.POST['city']
+    else:
+        city='indore'
+    url=f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid=2a16a150ce8b2ac63aa2dbd9b3b39e3b'
+    PARAMS={'units':'metrics'}#changes units of tempereture 
+    
+    data=requests.get(url,PARAMS).json() #fetching data from json file 
+    
+    des=data['weather'][0]['description']  #extracting description from the json file 
+    date=datetime.date.today()#to get today's date 
+    icon=data['weather'][0]['icon']
+    temp=data['main']['temp']
+    context={
+        'des':des,
+        'icon':icon,
+        'date':date,
+        'temp':temp,
+        'city':city
+    }
+    return render(request,'index.html',context)
+
+#json file format 
+#{
+#   "coord": {
+#     "lon": 10.99,
+#     "lat": 44.34
+#   },
+#   "weather": [
+#     {
+#       "id": 501,
+#       "main": "Rain",
+#       "description": "moderate rain",
+#       "icon": "10d"
+#     }
+#   ],
+#   "base": "stations",
+#   "main": {
+#     "temp": 298.48,
+#     "feels_like": 298.74,
+#     "temp_min": 297.56,
+#     "temp_max": 300.05,
+#     "pressure": 1015,
+#     "humidity": 64,
+#     "sea_level": 1015,
+#     "grnd_level": 933
+#   },
+#   "visibility": 10000,
+#   "wind": {
+#     "speed": 0.62,
+#     "deg": 349,
+#     "gust": 1.18
+#   },
+#   "rain": {
+#     "1h": 3.16
+#   },
+#   "clouds": {
+#     "all": 100
+#   },
+#   "dt": 1661870592,
+#   "sys": {
+#     "type": 2,
+#     "id": 2075663,
+#     "country": "IT",
+#     "sunrise": 1661834187,
+#     "sunset": 1661882248
+#   },
+#   "timezone": 7200,
+#   "id": 3163858,
+#   "name": "Zocca",
+#   "cod": 200
+# }            
